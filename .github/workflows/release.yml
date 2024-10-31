@@ -31,11 +31,28 @@ jobs:
           
       - name: Create Source Code ZIP
         run: |
-          zip -r b2-sleeknotify-source.zip . -x "ui/dist/*" "ui/node_modules/*"
+          zip -r b2-sleeknotify-source.zip . \
+            -x "ui/dist/*" \
+            -x "ui/node_modules/*" \
+            -x ".git/*" \
+            -x ".github/*"
           
-      - name: Create Production ZIP
+      - name: Prepare Production Build
         run: |
-          zip -r b2-sleeknotify.zip . -x "ui/node_modules/*" "ui/src/*" "ui/package*" "ui/vite.config.js" "ui/.gitignore" ".git/*" ".github/*"
+          # Create temp directory for production build
+          mkdir -p temp/b2-sleeknotify
+          
+          # Copy only necessary files
+          cp -r client temp/b2-sleeknotify/
+          cp -r server temp/b2-sleeknotify/
+          cp -r ui/dist temp/b2-sleeknotify/ui/
+          cp fxmanifest.lua temp/b2-sleeknotify/
+          cp README.md temp/b2-sleeknotify/
+          cp LICENSE temp/b2-sleeknotify/
+          
+          # Create production ZIP
+          cd temp
+          zip -r ../b2-sleeknotify.zip b2-sleeknotify
           
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -44,13 +61,28 @@ jobs:
           body: |
             ## ${{ github.ref_name }}
             
-            ### Source Code
+            ### Source Code Version
             - Complete source code with development files
             - Requires building before use
+            - Includes all development dependencies and source files
             
-            ### Production Build
+            ### Production Version
             - Ready-to-use version
-            - Just drop into your resources folder
+            - Just extract to your resources folder
+            - Pre-built UI files included
+            
+            ### Installation
+            1. Download the appropriate version:
+               - Use `b2-sleeknotify.zip` for direct installation
+               - Use `b2-sleeknotify-source.zip` for development
+            2. Extract to your resources folder
+            3. Add `ensure b2-sleeknotify` to your server.cfg
+            4. Restart your server
+            
+            ### Changes in this version:
+            - Please list your changes here
+          draft: false
+          prerelease: false
           files: |
             b2-sleeknotify-source.zip
             b2-sleeknotify.zip
