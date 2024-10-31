@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'B2DevUK'
-description 'B2-SleekNotify Minimal Notification System'
-version '1.0.0'
+description 'B2-SleekNotify Modern Notification System'
+version '1.1.0'
 
 ui_page 'ui/dist/index.html'
 
