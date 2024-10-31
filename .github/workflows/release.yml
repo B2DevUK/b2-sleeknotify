@@ -1,4 +1,4 @@
-name: Create Release
+name: Create Releases
 
 on:
   push:
@@ -6,10 +6,13 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  create-releases:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -26,6 +29,10 @@ jobs:
           cd ui
           npm run build
           
+      - name: Create Source Code ZIP
+        run: |
+          zip -r b2-sleeknotify-source.zip . -x "ui/dist/*" "ui/node_modules/*"
+          
       - name: Create Production ZIP
         run: |
           zip -r b2-sleeknotify.zip . -x "ui/node_modules/*" "ui/src/*" "ui/package*" "ui/vite.config.js" "ui/.gitignore" ".git/*" ".github/*"
@@ -33,6 +40,19 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: b2-sleeknotify.zip
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## ${{ github.ref_name }}
+            
+            ### Source Code
+            - Complete source code with development files
+            - Requires building before use
+            
+            ### Production Build
+            - Ready-to-use version
+            - Just drop into your resources folder
+          files: |
+            b2-sleeknotify-source.zip
+            b2-sleeknotify.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
