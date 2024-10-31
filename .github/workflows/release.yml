@@ -1,0 +1,38 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Install Dependencies
+        run: |
+          cd ui
+          npm install
+          
+      - name: Build UI
+        run: |
+          cd ui
+          npm run build
+          
+      - name: Create Production ZIP
+        run: |
+          zip -r b2-sleeknotify.zip . -x "ui/node_modules/*" "ui/src/*" "ui/package*" "ui/vite.config.js" "ui/.gitignore" ".git/*" ".github/*"
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: b2-sleeknotify.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
