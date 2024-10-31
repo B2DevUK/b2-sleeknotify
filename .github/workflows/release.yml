@@ -13,69 +13,37 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      
+        
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
           
-      - name: Install Dependencies
+      - name: Install and Build
+        working-directory: ./ui
         run: |
-          cd ui
-          npm install
-          
-      - name: Build UI
-        run: |
-          cd ui
-          sudo chown -R $USER:$USER .
+          npm ci
           npm run build
           
       - name: Create Source Code ZIP
         run: |
-          zip -r b2-sleeknotify-source.zip . \
-            -x "ui/dist/*" \
-            -x "ui/node_modules/*" \
-            -x ".git/*" \
-            -x ".github/*"
+          zip -r b2-sleeknotify-source.zip . -x "ui/dist/*" -x "ui/node_modules/*" -x ".git/*" -x ".github/*"
       
       - name: Create Production Build
         run: |
-          # Create a clean production directory
-          mkdir -p prod/b2-sleeknotify
-          sudo chown -R $USER:$USER prod
-          
-          # Copy only production files
-          cp -r client prod/b2-sleeknotify/
-          cp -r server prod/b2-sleeknotify/
-          mkdir -p prod/b2-sleeknotify/ui/dist
-          cp -r ui/dist/* prod/b2-sleeknotify/ui/dist/
-          cp fxmanifest.lua prod/b2-sleeknotify/
-          cp README.md prod/b2-sleeknotify/
-          cp LICENSE prod/b2-sleeknotify/
-          
-          # Create production ZIP
-          cd prod
+          mkdir -p temp/b2-sleeknotify
+          cp -r client temp/b2-sleeknotify/
+          cp -r server temp/b2-sleeknotify/
+          cp -r ui/dist temp/b2-sleeknotify/ui/
+          cp fxmanifest.lua temp/b2-sleeknotify/
+          cp README.md temp/b2-sleeknotify/
+          cp LICENSE temp/b2-sleeknotify/
+          cd temp
           zip -r ../b2-sleeknotify-production.zip b2-sleeknotify
-          cd ..
           
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.ref_name }}
-          body: |
-            ## ${{ github.ref_name }}
-            
-            ### Production Version (b2-sleeknotify-production.zip)
-            - Ready-to-use version
-            - Just extract to your resources folder
-            - Pre-built UI files included
-            
-            ### Source Code Version (b2-sleeknotify-source.zip)
-            - Complete source code with development files
-            - Requires building before use
-            - Includes all development dependencies
           files: |
             b2-sleeknotify-production.zip
             b2-sleeknotify-source.zip

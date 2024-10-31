@@ -6,7 +6,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    emptyOutDir: true
+    emptyOutDir: true,
+    sourcemap: false,
+    minify: true,
+    target: 'es2015'
   },
-  base: './'
+  base: './',
+  server: {
+    strictPort: true
+  }
 })
