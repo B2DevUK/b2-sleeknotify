@@ -79,21 +79,40 @@ exports['b2-sleeknotify']:CreateNotification({
 ```
 
 ### Server-Side Usage
+
+The notification system provides several server-side exports for different notification scenarios:
+
 ```lua
 -- Send to specific player
-TriggerClientEvent('notifications:create', playerId, {
+exports['b2-sleeknotify']:SendToPlayer(playerId, {
     type = 'success',
     title = 'Vehicle Stored',
-    message = 'Vehicle stored successfully!',
+    message = 'Your vehicle has been stored successfully!',
     position = 'TOP_RIGHT'
 })
 
 -- Send to all players
-TriggerClientEvent('notifications:create', -1, {
+exports['b2-sleeknotify']:SendToAll({
     type = 'info',
     title = 'Server Announcement',
     message = 'Server restart in 5 minutes',
     position = 'TOP_CENTER'
+})
+
+-- Send to multiple specific players
+exports['b2-sleeknotify']:SendToPlayers({1, 2, 3}, {
+    type = 'warning',
+    title = 'Area Alert',
+    message = 'Restricted area ahead',
+    position = 'TOP_RIGHT'
+})
+
+-- Send to players within a radius
+exports['b2-sleeknotify']:SendToRadius(coords, 100.0, {
+    type = 'info',
+    title = 'Local Event',
+    message = 'A local event is starting nearby',
+    position = 'TOP_RIGHT'
 })
 ```
 
@@ -148,6 +167,13 @@ For issues, feature requests, or support:
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
+### v1.2.0
+- Enhanced server-side implementation with new exports
+- Added radius-based notifications
+- Added support for sending to multiple players
+- Improved notification tracking
+- Updated documentation
+
 ### v1.1.0
 - Added advanced notification style
 - Added position support
